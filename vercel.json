@@ -1,6 +1,7 @@
 {
     "builds": [
       {
+        "version": 3,
         "src": "main_folder/main.py",
         "use": "@vercel/python"
       }
