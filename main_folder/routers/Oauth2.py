@@ -17,7 +17,7 @@ def verify_pass(user_pass, db_pass):
     return pwd_context.verify(user_pass, db_pass)
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 def generate_acces_token(data: dict):
@@ -40,7 +40,7 @@ def verify_access_token(token, cred_exception):
     return user_id
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    cred_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Individual Unauthorized')
+    cred_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Individual Unauthorized', headers={"WWW-Authenticate" : "Bearer"})
     user_id = verify_access_token(token, cred_exception)
     user = db.query(models.User).filter(models.User.id == user_id).first()
     return user

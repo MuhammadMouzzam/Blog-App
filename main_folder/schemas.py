@@ -2,24 +2,32 @@ from datetime import datetime
 from typing import List, TypedDict
 from pydantic import BaseModel, EmailStr, conint
 
-class BlogResponse(BaseModel):
-    tag : str
-    content : str
-    id : int
-    created_at : datetime
-
 class Blog(BaseModel):
     tag : str
     content: str
 
 class UserIn(BaseModel):
     email : EmailStr
+    username : str
     password : str
 
 class UserOut(BaseModel):
-    email : EmailStr
+    username : str
     id : int
     created_at : datetime
+
+class UserInfoOut(BaseModel):
+    username : str
+    id : int
+
+class BlogResponse(BaseModel):
+    tag : str
+    content : str
+    id : int
+    owner : UserInfoOut
+    created_at : datetime
+    class config:
+        orm_mode = True
 
 class AccessToken(BaseModel):
     access_token : str
@@ -32,6 +40,7 @@ class CommentIn(BaseModel):
 class CommentOut(BaseModel):
     id : int
     content : str
+    owner : UserInfoOut
     created_at : datetime
 
 class CommentInfo(BaseModel):
@@ -45,3 +54,7 @@ class CheckerAd(TypedDict):
     Blog : BlogResponse
     Votes : int
     Comments : List[CommentOut]
+
+class CheckAdDict(TypedDict):
+    User : UserInfoOut
+    Blogs : List[CheckerAd]

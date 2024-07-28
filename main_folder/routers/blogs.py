@@ -11,9 +11,7 @@ router = APIRouter(tags=["Blogs"])
 @router.get("/blogs", response_model=List[schemas.CheckerAd])
 def get_all_blogs(db: Session = Depends(get_db), tag: Optional[str] = ''):
     blogs = db.query(models.Blogs, func.count(models.Vote.blog_id).label('votes')).join(models.Vote, onclause=models.Vote.blog_id == models.Blogs.id, isouter=True).group_by(models.Blogs.id).filter(models.Blogs.tag.contains(tag)).all()
-    print(blogs)
     blogs = list(map(lambda x : x._mapping, blogs))
-    print(blogs)
     blogs_list = []
     for blog in blogs:
         comments = db.query(models.Comment).filter(models.Comment.blog_id == blog['Blogs'].id).all()
