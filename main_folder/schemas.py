@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, TypedDict
+from typing_extensions import TypedDict, List
 from pydantic import BaseModel, EmailStr, conint
 
 class Blog(BaseModel):
