@@ -5,7 +5,7 @@ from .routers import blogs, users, auth, comments, votes
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title='Blogs App', description="This is my 1st ever project using FastApi\nHere, you can post Blogs, add comments, and also like any blog if you find it interesting. This is a CRUD based application meaning you can create, delete, update and read blogs.")
+app = FastAPI(title='Blogs App', description="This is my 1st ever project using FastApi. Here, you can post Blogs, add comments, and also like any blog if you find it interesting. This is a CRUD based application meaning you can create, delete, update and read blogs.")
 
 
 @app.get("/")
