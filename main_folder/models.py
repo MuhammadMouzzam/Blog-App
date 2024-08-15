@@ -18,7 +18,6 @@ class User(Base):
     id = Column(Integer, primary_key = True, nullable= True)
     username = Column(String, unique=True, nullable=False)
     email = Column(String, nullable=False, unique=True)
-    password = Column(String, nullable=False, unique=False)
     created_at = Column(TIMESTAMP(timezone=True) , server_default=text('now()'), nullable=False)
 
 class Comment(Base):

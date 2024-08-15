@@ -1,5 +1,6 @@
 from typing import Tuple, List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import RedirectResponse
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 from ..database import get_db
@@ -8,14 +9,6 @@ from . import Oauth2
 
 router = APIRouter(tags=['Users'])
 
-@router.post('/users/signup', response_model=schemas.UserOut)
-def signUp(user: schemas.UserIn, db: Session = Depends(get_db)):
-    user.password = Oauth2.hashing(user.password)
-    user_in = models.User(**user.model_dump())
-    db.add(user_in)
-    db.commit()
-    db.refresh(user_in)
-    return user_in
 
 @router.get("/users/{username}", response_model=schemas.CheckAdDict)
 def find_user(username : str,  db: Session = Depends(get_db)):

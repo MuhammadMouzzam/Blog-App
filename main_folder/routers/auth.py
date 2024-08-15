@@ -1,20 +1,42 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from authlib.integrations.starlette_client import OAuth, OAuthError
 from sqlalchemy.orm import Session
 from ..database import get_db
+from ..config import settings
 from .. import models, schemas
 from . import Oauth2
 
 router = APIRouter(tags=['Authentication'])
+oauth = OAuth()
+oauth.register(
+    name = 'google',
+    server_metadata_url = 'https://accounts.google.com/.well-known/openid-configuration',
+    client_id = settings.client_id,
+    client_secret = settings.client_secret,
+    client_kwargs = {
+        'scope' : 'email openid profile',
+        'redirect_url' : 'https://blog-app-t73e.onrender.com/login/redirect'
+    }
+)
 
-@router.post('/login', response_model=schemas.AccessToken)
-def login(user_creds: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.email == user_creds.username).first()
+@router.get('/login', response_model=schemas.AccessToken)
+async def login(request : Request):
+    url = request.url_for('auth')
+    return await oauth.google.authorize_redirect(request, url)
+
+@router.get('/login/redirect')
+async def auth(request : Request, db: Session = Depends(get_db)):
+    try:
+        token = await oauth.google.authorize_access_token(request)
+    except OAuthError as e:
+        return 'Authentication failed'
+    user = token.get('userinfo')
+    db_user = db.query(models.User).filter(models.User.username == user['name']).first()
     if not db_user:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Invalid Credentials')
-    pass_check = Oauth2.verify_pass(user_pass=user_creds.password, db_pass=db_user.password)
-    if not pass_check:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Invalid Credentials')
+        entry_user = models.User(email=user['email'], username=user['name'])
+        db.add(entry_user)
+        db.commit()
+        db.refresh(entry_user)
     access_token = Oauth2.generate_acces_token({'user_id' : db_user.id})
     token = schemas.AccessToken(access_token=access_token)
     return token

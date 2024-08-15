@@ -1,12 +1,15 @@
 from fastapi import FastAPI
 from . import models
 from .database import engine
+from starlette.middleware.sessions import SessionMiddleware
 from .routers import blogs, users, auth, comments, votes
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title='Blogs App', description="This is my 1st ever project using FastApi. Here, you can post Blogs, add comments, and also like any blog if you find it interesting. This is a CRUD based application meaning you can create, delete, update and read blogs.")
+app.add_middleware(SessionMiddleware, secret_key='this string is random')
 
+# app.add_middleware(SessionMiddleware, secret_key='HHEHEHEHEHE')
 
 @app.get("/")
 def main_page():
