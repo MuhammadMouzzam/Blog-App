@@ -46,3 +46,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     user = db.query(models.User).filter(models.User.id == user_id).first()
     return user
     
+
+def remove_spaces(name: str):
+    new_name = ''
+    for s in name:
+        if s != ' ':
+            new_name += s
+    return new_name
