@@ -33,10 +33,10 @@ async def auth(request : Request, db: Session = Depends(get_db)):
     user = token.get('userinfo')
     db_user = db.query(models.User).filter(models.User.username == user['name']).first()
     if not db_user:
-        entry_user = models.User(email=user['email'], username=Oauth2.remove_spaces(user['name']))
-        db.add(entry_user)
+        db_user = models.User(email=user['email'], username=Oauth2.remove_spaces(user['name']))
+        db.add(db_user)
         db.commit()
-        db.refresh(entry_user)
+        db.refresh(db_user)
     access_token = Oauth2.generate_acces_token({'user_id' : db_user.id})
     token = schemas.AccessToken(access_token=access_token)
     return token
