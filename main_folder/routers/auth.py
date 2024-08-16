@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException, status
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from sqlalchemy.orm import Session
 from ..database import get_db
@@ -24,12 +24,12 @@ async def login(request : Request):
     url = request.url_for('auth')
     return await oauth.google.authorize_redirect(request, url)
 
-@router.get('/login/redirect')
+@router.get('/login/redirect', response_model=schemas.AccessToken)
 async def auth(request : Request, db: Session = Depends(get_db)):
     try:
         token = await oauth.google.authorize_access_token(request)
     except OAuthError as e:
-        return 'Authentication failed'
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Authentication Failed')
     user = token.get('userinfo')
     db_user = db.query(models.User).filter(models.User.username == user['name']).first()
     if not db_user:
