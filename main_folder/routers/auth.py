@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, Request
 from authlib.integrations.starlette_client import OAuth, OAuthError
 from sqlalchemy.orm import Session
 from ..database import get_db
@@ -15,11 +15,11 @@ oauth.register(
     client_secret = settings.client_secret,
     client_kwargs = {
         'scope' : 'email openid profile',
-        'redirect_url' : 'https://blog-app-t73e.onrender.com/login/redirect'
+        'redirect_url' : 'https://blog-app-t73e.onrender.com//login/redirect'
     }
 )
 
-@router.get('/login', response_model=schemas.AccessToken)
+@router.get('/login')
 async def login(request : Request):
     url = request.url_for('auth')
     return await oauth.google.authorize_redirect(request, url)
