@@ -24,13 +24,15 @@ async def login(request : Request):
     url = request.url_for('auth')
     return await oauth.google.authorize_redirect(request, url)
 
-@router.get('/login/redirect', response_model=schemas.AccessToken)
+@router.get('/login/redirect') #, response_model=schemas.AccessToken
 async def auth(request : Request, db: Session = Depends(get_db)):
     try:
         token = await oauth.google.authorize_access_token(request)
     except OAuthError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Authentication Failed')
     user = token.get('userinfo')
+    if user:
+        request.session['user'] = user
     db_user = db.query(models.User).filter(models.User.username == user['name']).first()
     if not db_user:
         db_user = models.User(email=user['email'], username=Oauth2.remove_spaces(user['name']))
