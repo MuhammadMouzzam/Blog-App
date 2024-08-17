@@ -15,7 +15,7 @@ oauth.register(
     client_secret = settings.client_secret,
     client_kwargs = {
         'scope' : 'email openid profile',
-        'redirect_url' : 'https://blog-app-t73e.onrender.com//login/redirect'
+        'redirect_url' : 'https://blog-app-t73e.onrender.com/login/redirect'
     }
 )
 
