@@ -18,7 +18,7 @@ def hashing(password):
     return pwd_context.hash(password)
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login/redirect")
 
 
 def generate_acces_token(data: dict):
