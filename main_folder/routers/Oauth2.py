@@ -1,14 +1,10 @@
-from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordBearer
-import fastapi.security
-from fastapi import Depends, HTTPException, Request, status
+from fastapi import Depends, HTTPException, status
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from pydantic import EmailStr
 from sqlalchemy.orm import Session
-from email.message import EmailMessage
 from .. import models
-import smtplib, random
 from ..database import get_db
 from ..config import settings
 from jose import jwt, JWTError
@@ -17,10 +13,8 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hashing(password):
     return pwd_context.hash(password)
-oauth2_scheme = fastapi.security.OAuth2AuthorizationCodeBearer(authorizationUrl='login', tokenUrl='login/redirect')
 
-
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="addtoken")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="addtoken")
 
 
 def generate_acces_token(data: dict):

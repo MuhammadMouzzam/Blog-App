@@ -43,3 +43,7 @@ async def auth(request : Request, db: Session = Depends(get_db)):
     access_token = Oauth2.generate_acces_token({'user_id' : db_user.id})
     token = schemas.AccessToken(access_token=access_token)
     return token
+
+@router.get('/addtoken')
+def addtoken(token : str = Depends()):
+    return token
