@@ -34,8 +34,9 @@ async def auth(request : Request, db: Session = Depends(get_db)):
     if user:
         request.session['user'] = user
     db_user = db.query(models.User).filter(models.User.username == user['name']).first()
+    print(db_user)
     if not db_user:
-        db_user = models.User(email=user['email'], username=Oauth2.remove_spaces(user['name']))
+        db_user = models.User(email=user['email'], username=user['name'])
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
